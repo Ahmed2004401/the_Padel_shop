@@ -1,0 +1,29 @@
+mutation CreateUser($displayName: String!, $email: String!) @auth(level: USER) {
+  user_insert(data: {displayName: $displayName, email: $email, createdAt_expr: "request.time"})
+}
+
+query GetProductsByCategory($categoryId: UUID!) @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  products(where: {categoryId: {eq: $categoryId}}) {
+    id
+    name
+    description
+    imageUrl
+    price
+  }
+}
+
+mutation AddReview($productId: UUID!, $rating: Int!, $comment: String, $title: String) @auth(level: USER) {
+  review_insert(data: {productId: $productId, userId_expr: "auth.uid", rating: $rating, comment: $comment, title: $title, createdAt_expr: "request.time"})
+}
+
+query GetMyWishlist @auth(level: USER) {
+  wishlists(where: {userId_expr: "auth.uid"}) {
+    product {
+      id
+      name
+      description
+      imageUrl
+      price
+    }
+  }
+}
