@@ -221,44 +221,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             // Products grid
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Builder(builder: (context) {
-                // Decide which provider to use based on selectedCategory/brand
-                if (_selectedCategory != null) {
-                  final params = <String, String?>{'category': _selectedCategory!, 'brand': _selectedBrand};
-                  final filtered = ref.watch(productsByCategoryAndBrandProvider(params));
-                  return filtered.when(
-                    data: (filteredProducts) => _buildProductsGrid(filteredProducts, context),
-                    loading: () => const Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 32),
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                    error: (e, st) => Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 32),
-                        child: Text('Error loading products: $e'),
-                      ),
-                    ),
-                  );
-                }
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Builder(builder: (context) {
+                    // Decide which provider to use based on selectedCategory/brand
+                    if (_selectedCategory != null) {
+                      final params = <String, String?>{'category': _selectedCategory!, 'brand': _selectedBrand};
+                      final filtered = ref.watch(productsByCategoryAndBrandProvider(params));
+                      return filtered.when(
+                        data: (filteredProducts) => _buildProductsGrid(filteredProducts, context),
+                        loading: () => const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 32),
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                        error: (e, st) => Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 32),
+                            child: Text('Error loading products: $e'),
+                          ),
+                        ),
+                      );
+                    }
 
-                return products.when(
-                  data: (allProducts) => _buildProductsGrid(allProducts, context),
-                  loading: () => const Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 32),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-                  error: (error, st) => Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 32),
-                      child: Text('Error loading products: $error'),
-                    ),
-                  ),
-                );
-              }),
+                    return products.when(
+                      data: (allProducts) => _buildProductsGrid(allProducts, context),
+                      loading: () => const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 32),
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      error: (error, st) => Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 32),
+                          child: Text('Error loading products: $error'),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
             ),
           ],
         ),
@@ -304,11 +309,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return ProductCard(
           product: product,
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${product.name} - Product detail page coming soon!'),
-              ),
-            );
+            // Navigate to product detail page
+            context.push('/product/${product.id}', extra: product);
           },
         );
       },
