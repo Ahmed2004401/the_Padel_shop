@@ -1,144 +1,91 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/product.dart';
 
-/// Temporary in-memory product data (mock database).
-/// Replace with Firestore queries in production.
-final _mockProducts = [
-  Product(
-    id: '1',
-    name: 'Professional Carbon Paddle',
-    description: 'High-quality carbon padel racket for professionals',
-    price: 199.99,
-    imageUrl: 'https://via.placeholder.com/300?text=Paddle+1',
-    category: 'Paddles',
-    brand: 'ProLine',
-    rating: 4.8,
-    reviews: 128,
-    stock: 15,
-    createdAt: DateTime.now().subtract(const Duration(days: 30)),
-  ),
-  Product(
-    id: '2',
-    name: 'Professional Ball Set',
-    description: 'Premium padel balls - set of 12',
-    price: 49.99,
-    imageUrl: 'https://via.placeholder.com/300?text=Balls',
-    category: 'Balls',
-    brand: 'MatchPro',
-    rating: 4.5,
-    reviews: 89,
-    stock: 45,
-    createdAt: DateTime.now().subtract(const Duration(days: 20)),
-  ),
-  Product(
-    id: '3',
-    name: 'Padel Court Shoes',
-    description: 'Professional padel shoes with excellent grip',
-    price: 129.99,
-    imageUrl: 'https://via.placeholder.com/300?text=Shoes',
-    category: 'Shoes',
-    brand: 'GripX',
-    rating: 4.6,
-    reviews: 76,
-    stock: 30,
-    createdAt: DateTime.now().subtract(const Duration(days: 15)),
-  ),
-  Product(
-    id: '4',
-    name: 'Beginner Paddle',
-    description: 'Great starter padel racket for beginners',
-    price: 79.99,
-    imageUrl: 'https://via.placeholder.com/300?text=Paddle+2',
-    category: 'Paddles',
-    brand: 'StarterCo',
-    rating: 4.2,
-    reviews: 203,
-    stock: 50,
-    createdAt: DateTime.now().subtract(const Duration(days: 25)),
-  ),
-  Product(
-    id: '5',
-    name: 'Padel Backpack',
-    description: 'Durable padel equipment backpack',
-    price: 89.99,
-    imageUrl: 'https://via.placeholder.com/300?text=Backpack',
-    category: 'Accessories',
-    brand: 'BagMaster',
-    rating: 4.4,
-    reviews: 45,
-    stock: 20,
-    createdAt: DateTime.now().subtract(const Duration(days: 10)),
-  ),
-  Product(
-    id: '6',
-    name: 'Padel Grip Tape',
-    description: 'Premium grip tape for padel rackets',
-    price: 19.99,
-    imageUrl: 'https://via.placeholder.com/300?text=Grip',
-    category: 'Accessories',
-    brand: 'GripX',
-    rating: 4.7,
-    reviews: 312,
-    stock: 100,
-    createdAt: DateTime.now().subtract(const Duration(days: 5)),
-  ),
-];
-
-/// Provider for all products.
+/// Provider for all products from Firestore.
 final productsProvider = FutureProvider<List<Product>>((ref) async {
-  // Simulate network delay
-  await Future.delayed(const Duration(milliseconds: 500));
-  return _mockProducts;
+  final firestore = FirebaseFirestore.instance;
+  final snapshot = await firestore.collection('products').get();
+  
+  return snapshot.docs
+      .map((doc) => Product.fromMap(doc.data()))
+      .toList();
 });
 
-/// Provider for filtered products by category.
+/// Provider for filtered products by category from Firestore.
 final productsByCategoryProvider =
     FutureProvider.family<List<Product>, String>((ref, category) async {
-  final products = await ref.watch(productsProvider.future);
-  return products.where((p) => p.category == category).toList();
+  final firestore = FirebaseFirestore.instance;
+  final snapshot = await firestore
+      .collection('products')
+      .where('category', isEqualTo: category)
+      .get();
+  
+  return snapshot.docs
+      .map((doc) => Product.fromMap(doc.data()))
+      .toList();
 });
 
-/// Provider for brands (unique) by category.
+/// Provider for brands by category from Firestore.
 final brandsProvider = FutureProvider.family<List<String>, String>((ref, category) async {
-  final products = await ref.watch(productsProvider.future);
-  final brands = products
-      .where((p) => p.category == category)
-      .map((p) => p.brand)
+  final firestore = FirebaseFirestore.instance;
+  final snapshot = await firestore
+      .collection('products')
+      .where('category', isEqualTo: category)
+      .get();
+  
+  final brands = snapshot.docs
+      .map((doc) => doc.data()['brand'] as String?)
       .whereType<String>()
       .toSet()
-      .toList();
+      .toList()
+      ..sort();
+  
   return brands;
 });
 
-/// Provider for products filtered by category and optionally brand.
+/// Provider for filtered products by category and optionally brand from Firestore.
 final productsByCategoryAndBrandProvider =
     FutureProvider.family<List<Product>, Map<String, String?>>((ref, params) async {
   final category = params['category'] ?? '';
   final brand = params['brand'];
-  final products = await ref.watch(productsProvider.future);
-  var filtered = products.where((p) => p.category == category);
+  final firestore = FirebaseFirestore.instance;
+  
+  Query query = firestore
+      .collection('products')
+      .where('category', isEqualTo: category);
+  
   if (brand != null && brand.isNotEmpty) {
-    filtered = filtered.where((p) => p.brand == brand);
+    query = query.where('brand', isEqualTo: brand);
   }
-  return filtered.toList();
+  
+  final snapshot = await query.get();
+  
+  return snapshot.docs
+      .map((doc) => Product.fromMap(doc.data() as Map<String, dynamic>))
+      .toList();
 });
 
 // UI selection state is managed locally in the HomeScreen for now.
 
-/// Provider for a single product by ID.
+/// Provider for a single product by ID from Firestore.
 final productByIdProvider =
     FutureProvider.family<Product?, String>((ref, productId) async {
-  final products = await ref.watch(productsProvider.future);
-  try {
-    return products.firstWhere((p) => p.id == productId);
-  } catch (_) {
-    return null;
-  }
+  final firestore = FirebaseFirestore.instance;
+  final doc = await firestore.collection('products').doc(productId).get();
+  
+  if (!doc.exists) return null;
+  
+  return Product.fromMap(doc.data() as Map<String, dynamic>);
 });
 
-/// Provider for product categories (unique).
+/// Provider for product categories from Firestore.
 final categoriesProvider = FutureProvider<List<String>>((ref) async {
-  final products = await ref.watch(productsProvider.future);
-  final categories = products.map((p) => p.category).toSet().toList();
-  return categories;
+  final firestore = FirebaseFirestore.instance;
+  final snapshot = await firestore.collection('categories').get();
+  
+  return snapshot.docs
+      .map((doc) => doc.id)
+      .toList()
+      ..sort();
 });

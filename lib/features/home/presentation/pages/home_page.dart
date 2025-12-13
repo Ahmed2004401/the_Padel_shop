@@ -33,6 +33,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const DrawerHeader(
                 child: Text('Sections', style: TextStyle(fontSize: 20)),
               ),
+              // Profile and User Actions
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('My Profile'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.push('/profile');
+                },
+              ),
+              const Divider(),
               Expanded(
                 child: categories.when(
                   data: (cats) {
@@ -137,9 +147,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
             onSelected: (value) {
               if (value == 'profile') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Profile page coming soon!')),
-                );
+                context.push('/profile');
               } else if (value == 'settings') {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Settings coming soon!')),

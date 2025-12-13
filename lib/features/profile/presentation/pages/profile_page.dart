@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_application_1/core/models/user_profile.dart';
 import 'package:flutter_application_1/core/services/auth_service.dart';
@@ -240,9 +239,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 : null,
             child: _userProfile?.photoURL == null || _userProfile!.photoURL!.isEmpty
                 ? Text(
-                    _userProfile?.displayName?.substring(0, 1).toUpperCase() ?? 
-                    _userProfile?.email.substring(0, 1).toUpperCase() ?? 
-                    'U',
+                    _avatarInitial(),
                     style: const TextStyle(fontSize: 40, color: Colors.blue),
                   )
                 : null,
@@ -435,6 +432,20 @@ class _ProfilePageState extends State<ProfilePage> {
   String _formatDate(DateTime? date) {
     if (date == null) return 'N/A';
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  /// Safely compute a single-letter initial for the avatar.
+  /// Falls back to 'U' when displayName and email are empty or null.
+  String _avatarInitial() {
+    final dn = _userProfile?.displayName?.trim();
+    if (dn != null && dn.isNotEmpty) {
+      return dn[0].toUpperCase();
+    }
+    final em = _userProfile?.email.trim();
+    if (em != null && em.isNotEmpty) {
+      return em[0].toUpperCase();
+    }
+    return 'U';
   }
 
   @override

@@ -7,6 +7,7 @@ import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/cart/presentation/pages/cart_page_clean.dart';
 import '../../features/product/presentation/pages/product_detail_page.dart';
 import '../../features/cart/presentation/pages/checkout_page.dart';
+import '../../features/profile/presentation/pages/profile_page.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/home',
@@ -35,6 +36,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/checkout',
       builder: (context, state) => const CheckoutPage(),
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const ProfilePage(),
     ),
   ],
 );
