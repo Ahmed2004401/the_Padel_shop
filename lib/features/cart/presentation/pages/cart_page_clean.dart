@@ -85,14 +85,7 @@ class CartPageClean extends StatelessWidget {
                 Row(children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => showDialog<void>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Checkout'),
-                          content: const Text('Checkout is not implemented yet.'),
-                          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))],
-                        ),
-                      ),
+                      onPressed: () => context.push('/checkout'),
                       child: const Text('Proceed to Checkout'),
                     ),
                   )

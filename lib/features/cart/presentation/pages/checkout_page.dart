@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/core/services/cart_service.dart';
 import 'package:flutter_application_1/core/models/cart_item.dart';
-import 'package:flutter_application_1/core/models/product.dart';
 
 enum PaymentMethod { card, cod }
 
