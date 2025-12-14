@@ -8,6 +8,8 @@ import '../../features/cart/presentation/pages/cart_page_clean.dart';
 import '../../features/product/presentation/pages/product_detail_page.dart';
 import '../../features/cart/presentation/pages/checkout_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/orders/presentation/pages/orders_page.dart';
+import '../../features/orders/presentation/pages/order_detail_page.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/home',
@@ -40,6 +42,20 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/profile',
       builder: (context, state) => const ProfilePage(),
+    ),
+    GoRoute(
+      path: '/orders',
+      builder: (context, state) {
+        // The OrdersPage reads the actual userId from the app state in real usage.
+        return OrdersPage(userId: 'current');
+      },
+    ),
+    GoRoute(
+      path: '/orders/:id',
+      builder: (context, state) {
+        final order = state.extra as dynamic; // expects Order passed in extra
+        return OrderDetailPage(order: order);
+      },
     ),
   ],
 );

@@ -89,7 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     title: const Text('Your Orders'),
                     onTap: () {
                       Navigator.pop(context);
-                      // Navigate to orders
+                      context.push('/orders');
                     },
                   ),
                   const Divider(),
