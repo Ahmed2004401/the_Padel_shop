@@ -46,8 +46,8 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/orders',
       builder: (context, state) {
-        // The OrdersPage reads the actual userId from the app state in real usage.
-        return OrdersPage(userId: 'current');
+        // OrdersPage will read the current user from the auth provider.
+        return const OrdersPage();
       },
     ),
     GoRoute(
