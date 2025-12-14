@@ -128,7 +128,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ListTile(
                     leading: const Icon(Icons.settings_outlined),
                     title: const Text('Settings'),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.push('/settings');
+                    },
                   ),
                   ListTile(
                     leading: const Icon(Icons.help_outline),
@@ -155,25 +158,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         foregroundColor: Colors.white,
         elevation: 0,
         titleSpacing: 0,
-        title: Container(
-          height: 40,
-          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: TextField(
-            decoration: InputDecoration(
-              hintText: 'Search Padel Shop',
-              hintStyle: TextStyle(fontSize: 14, color: Colors.grey[600]),
-              prefixIcon: const Icon(Icons.search, color: Colors.black54),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+        title: Row(
+          children: [
+            // Logo
+            Container(
+              padding: const EdgeInsets.all(6),
+              margin: const EdgeInsets.only(right: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Image.asset(
+                'assets/logo.png',
+                width: 30,
+                height: 30,
+                fit: BoxFit.contain,
+              ),
             ),
-            onTap: () {
-              // Navigate to search page
-            },
-          ),
+            // Search field
+            Expanded(
+              child: Container(
+                height: 40,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search Padel Shop',
+                    hintStyle: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    prefixIcon: const Icon(Icons.search, color: Colors.black54),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                  ),
+                  onTap: () {
+                    // Navigate to search page
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(

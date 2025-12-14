@@ -1,5 +1,4 @@
 // lib/features/orders/models/order.dart
-import 'package:flutter/foundation.dart';
 
 enum OrderStatus { processing, shipped, delivered, cancelled }
 

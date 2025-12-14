@@ -1,6 +1,7 @@
 // lib/config/routes/app_router.dart
 import 'package:go_router/go_router.dart';
 import '../../core/widgets/auth_guard.dart';
+import '../../core/widgets/splash_screen.dart';
 import '../../core/models/product.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
@@ -10,10 +11,15 @@ import '../../features/cart/presentation/pages/checkout_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/orders/presentation/pages/orders_page.dart';
 import '../../features/orders/presentation/pages/order_detail_page.dart';
+import '../../features/settings/presentation/pages/settings_page.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/home',
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginPage(),
@@ -49,6 +55,10 @@ final appRouter = GoRouter(
         // OrdersPage will read the current user from the auth provider.
         return const OrdersPage();
       },
+    ),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const SettingsPage(),
     ),
     GoRoute(
       path: '/orders/:id',

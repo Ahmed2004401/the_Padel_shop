@@ -104,18 +104,23 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
         _passwordController.clear();
         _confirmPasswordController.clear();
 
+        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Registration successful! Going to home...'),
+            content: Text('Registration successful! Welcome to Padel Shop!'),
             backgroundColor: Colors.green,
-            duration: Duration(milliseconds: 1000),
+            duration: Duration(milliseconds: 2000),
           ),
         );
 
-        // Add a small delay to ensure auth state is fully propagated
-        await Future.delayed(const Duration(milliseconds: 100));
+        // Wait for auth state to fully propagate and then navigate
+        await Future.delayed(const Duration(milliseconds: 500));
         if (mounted) {
+          // Use pushReplacement to prevent going back to registration
           context.go('/home');
+          
+          // Invalidate the auth provider to refresh user state
+          ref.invalidate(currentUserProvider);
         }
       }
     } catch (e) {
