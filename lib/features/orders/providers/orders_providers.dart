@@ -1,6 +1,6 @@
 // lib/features/orders/providers/orders_providers.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/order.dart';
+import 'package:flutter_application_1/core/models/order.dart';
 
 class OrdersQueryParams {
   final OrderStatus? status;
